@@ -1,0 +1,97 @@
+{% extends "app/base.html" %}
+{% block content %}
+{% load session_tags %}
+{% if 'msg' in request.session %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{% display_and_flush_message %}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+    <div class="profile-main">
+        <div class="login-main">
+            <div class="login-box">
+                <form action="{% url 'updateProfile' %}" method="post">
+                    {% csrf_token %}
+                    <h3>Update Profile</h3>
+                    <div class="profile-box">
+                        <div class="profile-input">
+                            <p>First Name</p>
+                            <input type="text" name="fname" value="{{user.user_fname}}" placeholder="Enter Your first name" required>
+                        </div>
+                        <div class="profile-input">
+                            <p>Last Name</p>
+                            <input type="text" name="lname" value="{{user.user_lname}}" placeholder="enter your last name" required>
+                        </div>
+                    </div>
+                    <div class="profile-box">
+                        <div class="profile-input">
+                            <p>date of birth</p>
+                            
+                            <input type="date" name="date" value="{{dob}}" style="text-transform: uppercase;">
+                        </div>
+                        <div class="profile-input">
+                            <p>gender</p>
+                            <div class="profile-gender">
+                                {% if user.gender == "m" %}
+                                    <input type="radio" name="gender" value="m" checked>Male
+                                    <input type="radio" name="gender" value="f">Female
+                                {% elif user.gender == "f" %}
+                                    <input type="radio" name="gender" value="m">Male
+                                    <input type="radio" name="gender" value="f"checked>Female
+                                {% else %}
+                                    <input type="radio" name="gender" value="m">Male
+                                    <input type="radio" name="gender" value="f">Female
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-box">
+                        <div class="profile-input">
+                            <p>Mobile Number</p>
+                            {% if user.user_contact == none %}
+                                <input type="text" name="mobile"  placeholder="Enter Your mobile number" pattern="[0-9]{10}"
+                                title="Please enter valid mobile number.">
+                                
+                                {% else %}
+                                <input type="text" name="mobile" value="{{user.user_contact}}" placeholder="Enter Your mobile number" pattern="[0-9]{10}"
+                                title="Please enter valid mobile number.">
+                            {% endif %}
+                        </div>
+                        <div class="profile-input">
+                            <p>Email</p>
+                            <input type="email" name="email" value="{{user.user_email}}" placeholder="enter your email" required>
+                        </div>
+                    </div>
+                    <div class="profile-box">
+                        <div class="profile-input">
+                            <p>Address</p>
+                            <div class="profile-address">
+                                {% if user.house_street == none and user.apartment_area == none %}
+                                <input type="text" name="house"  placeholder="house number and street name">
+                                <input type="text" name="apartment" placeholder="apartment and area name">
+                                {% else %}
+                                <input type="text" name="house" value="{{user.house_street}}" placeholder="house number and street name">
+                                <input type="text" name="apartment" value="{{user.apartment_area}}" placeholder="apartment and area name">
+                                {% endif %}
+                            </div>
+                            <div class="profile-address">
+                                {% if  user.city == none and user.state == none and user.pincode == none %}
+                                
+                                <input type="text" name="city"  placeholder="city">
+                                <input type="text" name="state"  placeholder="state">
+                                <input type="text" name="pincode" placeholder="pincode">
+                                {% else %}
+                                <input type="text" name="city" value="{{user.city}}" placeholder="city">
+                                <input type="text" name="state" value="{{user.state}}" placeholder="state">
+                                <input type="text" name="pincode" value="{{user.pincode}}" placeholder="pincode">
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <input type="submit" class="mybtn" value="update">
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {% endblock  %}

@@ -1,0 +1,105 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% load session_tags %}
+    
+        <!-- "Radhe Radhe" -->
+        {% block content %}
+        
+{% if 'msg' in request.session %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{% display_and_flush_message %}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+        <div class="active-order">
+            <h3>Your Orders : </h3>
+            <div class="active-order-box">
+                {% if orders %}
+                {% for order in orders %}
+                    <div class="active-order-details">
+                        <table>
+                            <tr>
+                                <td>order number : </td>
+                                <td>{{order.id}}</td>
+                                {% if order.order_status == "out for delivery" %}
+                                <td rowspan="4" style="text-align: center;"><a href="{% url 'activeOrderDetailsPage' %}?oid={{order.id}}" class="mybtn">view details</a></td>
+                                {% else %}
+                                <td rowspan="2" style="text-align: center;"><a href="{% url 'activeOrderDetailsPage' %}?oid={{order.id}}" class="mybtn">view details</a></td>
+
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>order status : </td>
+                                <td>{{order.order_status}}</td>
+                            </tr>
+                            <tr>
+                                <td>order date : </td>
+                                <td>{{order.created_at}}</td>
+                                {% if order.order_status != "out for delivery" %}
+                                <td rowspan="2" style="text-align: center;"><a href="{% url 'cancelOrder' %}?oid={{order.id}}" class="mybtn canbtn" onclick="confirmCancel(event)">cancel order</a></td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>total amount : </td>
+                                <td>₹{{order.total_price|floatformat:"0"}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                {% endfor %}
+                {% else %}
+                    <h3>You have not placed any orders yet!</h3>
+                {% endif %}
+                
+                
+                    
+            </div>
+            {% if cancels %}
+            <h3>Cancel Orders : </h3>
+            <div class="active-order-box">
+                
+                    {% for cancel in cancels %}
+                    <div class="active-order-details" >
+                        <table>
+                            <tr>
+                                <td>order numner : </td>
+                                <td>{{cancel.id}}</td>
+                                <td rowspan="2" style="text-align: center;"><a href="{% url 'activeOrderDetailsPage' %}?oid={{cancel.id}}" class="mybtn">view details</a></td>
+                            </tr>
+                            <tr>
+                                <td>order status : </td>
+                                <td>cancelled</td>
+                            </tr>
+                            <tr>
+                                <td>order date : </td>
+                                <td>{{cancel.created_at}}</td>
+                                {% if cancel.is_refunded == False %}
+                                
+                                    <td rowspan="2" style="text-align: center;">refund status : pending</td>
+                                {% else %}
+                                    <td rowspan="2" style="text-align: center;">refund status : completed</td>
+
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>total amount : </td>
+                                <td>₹{{cancel.total_price|floatformat:"0"}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    {% endfor %}      
+            </div>
+            {% endif %}
+        </div>
+
+        <script>
+            function confirmCancel(event) {
+                event.preventDefault();
+                var cancelLink = event.target.href;
+                var confirmCancel = confirm("Are you sure you want to cancel this order?");
+                if (confirmCancel) {
+                    window.location.href = cancelLink;
+                }
+            }
+        </script>
+
+        {% endblock %}

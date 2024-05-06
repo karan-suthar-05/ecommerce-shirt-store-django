@@ -1,0 +1,53 @@
+{% extends "admin/change_list.html" %}
+
+{% load i18n %}
+{% block content %}
+<!-- {% if opts.model_name == "order" or opts.model_name == "production" %}
+<button type="submit" style="padding: 0.5vw;margin-bottom: 10px;border-radius: 10px;"><a href="report/">Download {{opts.model_name}} report</a></button>
+{% endif %} -->
+{% if opts.model_name == "order" %}
+<form action="{% url 'admin:myapp_sales_report' %}" method="post">
+    {% csrf_token %}
+    <label for="date_range">{% trans "Date Range : " %}</label>
+    <select name="date_range" id="date_range">
+        <option value="today">{% trans "Today" %}</option>
+        <option value="last_7_days">{% trans "Last 7 Days" %}</option>
+        <option value="this_month">{% trans "This Month" %}</option>
+        <option value="last_month">{% trans "Last Month" %}</option>
+        <option value="this_year">{% trans "This Year" %}</option>
+    </select>
+    <input type="submit" name="_selected_action" value="{% trans 'Generate Report' %}">
+</form>
+{% endif %}
+{% if opts.model_name == "production" %}
+<form action="{% url 'admin:myapp_sales_report' %}" method="post">
+    {% csrf_token %}
+    <label for="date_range">{% trans "Date Range : " %}</label>
+    <select name="date_range" id="date_range">
+        <option value="today">{% trans "Today" %}</option>
+        <option value="last_7_days">{% trans "Last 7 Days" %}</option>
+        <option value="this_month">{% trans "This Month" %}</option>
+        <option value="last_month">{% trans "Last Month" %}</option>
+        <option value="this_year">{% trans "This Year" %}</option>
+    </select>
+    <input type="submit" name="_selected_action" value="{% trans 'Generate Report' %}">
+</form>
+{% endif %}
+{% if opts.model_name == "user" %}
+<form action="{% url 'admin:myapp_customer_report' %}" method="post">
+    {% csrf_token %}
+    <label for="date_range">{% trans "Date Range : " %}</label>
+    <select name="date_range" id="date_range">
+        <option value="today">{% trans "Today" %}</option>
+        <option value="last_7_days">{% trans "Last 7 Days" %}</option>
+        <option value="this_month">{% trans "This Month" %}</option>
+        <option value="last_month">{% trans "Last Month" %}</option>
+        <option value="this_year">{% trans "This Year" %}</option>
+    </select>
+    <input type="submit" name="_selected_action" value="{% trans 'Generate Report' %}">
+</form>
+{% endif %}
+
+{{ block.super }}
+
+{% endblock content %}

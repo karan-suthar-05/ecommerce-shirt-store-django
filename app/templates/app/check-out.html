@@ -1,0 +1,218 @@
+{% extends "app/base.html" %}
+{% block content %}
+{% load static %}
+{% load session_tags %}
+{% if 'msg' in request.session %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{% display_and_flush_message %}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="check-out">
+    <div class="user-info">
+        <form action="{% url 'payment' %}" method="POST">
+            {% csrf_token %}
+            <div class="user-email">
+                <h4>Customer information</h4>
+                <input type="text" name="email" value="{{user.user_email}}" placeholder="email address" readonly>
+            </div>
+            <div class="billing-info">
+                <h4>billing details</h4>
+                <div class="user-name">
+                    <input type="text" name="fname" value="{{user.user_fname}}" placeholder="first name" required>
+                    <input type="text" name="lname" value="{{user.user_lname}}" placeholder="last name" required>
+                </div>
+                <div class="user-address">
+                    <input type="text" name="house" value="{{ user.house_street|default_if_none:'' }}"
+                        placeholder="house number and street name" required>
+                    <input type="text" name="apartment" value="{{ user.apartment_area|default_if_none:'' }}"
+                        placeholder="apartment and area name" required>
+                </div>
+                <div class="user-address">
+                    <input type="text" name="city" id="" value="{{ user.city|default_if_none:'' }}" placeholder="city"
+                        required>
+                    <input type="text" name="state" id="" value="{{ user.state|default_if_none:'' }}" placeholder="state"
+                        required>
+                    <input type="text" name="pincode" id="" value="{{ user.pincode|default_if_none:'' }}" placeholder="pincode"
+                        required>
+                </div>
+                <input type="text" name="mobile" id="" value="{{ user.user_contact|default_if_none:'' }}"
+                    placeholder="phone number" pattern="[0-9]{10}" required>
+            </div>
+            <div class="additional-info">
+                <h4>additional information</h4>
+                <textarea name="addition-info" id="note" placeholder="notes about your order."></textarea>
+            </div>
+            {% comment %} <div class="payment">
+                <h4>payment</h4>
+                <div class="payment-gatway">
+                    <!-- payment_form.html -->
+
+                </div>
+            </div> {% endcomment %}
+            <div class="place-order-btn">
+                {% if shirt %}
+                {% if shirt.discount_price == 0 %}
+                {% widthratio pqty 1 shirt.price as product_price %}
+                {% else %}
+                {% widthratio pqty 1 shirt.discount_price as product_price %}
+                {% endif %}
+                <button type="submit" id="rzp-button1" class="mybtn">pay ₹{{product_price}}</button>
+                {% endif %}
+                {% if shirts %}
+                <button type="submit" id="rzp-button1" class="mybtn">pay ₹{{totalprice}}</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    <div class="order-info">
+        <h4>your order</h4>
+        <table>
+            <tr>
+                <th>product</th>
+                <th>subtotal</th>
+            </tr>
+            {% if shirt %}
+            <tr>
+                <td>
+                    <div class="order-product">
+                        <img src="{{shirt.imgs.first.image.url}}" alt="shirt1">
+                        <p>{{shirt.product_name}} × {{pqty}}</p>
+                    </div>
+                </td>
+
+                
+                <td>₹{{product_price}}</td>
+                
+            </tr>
+            {% endif %}
+            {% if shirts %}
+            {% for shirt in shirts %}
+            <tr>
+                <td>
+                    <div class="order-product">
+                        <img src="{{shirt.product.imgs.first.image.url}}" alt="shirt1">
+                        <p>{{shirt.product.product_name}}×{{shirt.quantity}}</p>
+                    </div>
+                </td>
+                {% if shirt.product.discount_price == 0 %}
+                {% widthratio shirt.quantity 1 shirt.product.price as total_price %}
+                {% else %}
+                {% widthratio shirt.quantity 1 shirt.product.discount_price as total_price %}
+                {% endif %}
+                <td>₹{{total_price}}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            {% if shirt %}
+                {% comment %} {% if shirt.discount_price == 0 %}
+                {% widthratio pqty 1 shirt.price as total_price %}
+                {% else %}
+                {% widthratio pqty 1 shirt.discount_price as product_price %}
+                {% endif %}
+                {% if shirt.discount_price == 0 %} {% endcomment %}
+                <tr>
+                    <th>total : </th>
+                    <th>₹{{product_price}}</th>
+                </tr>
+            {% comment %} {% else %}
+                <tr>
+                    <th>total : </th>
+                    <th>₹{{shirt.discount_price}}</th>
+                </tr> {% endcomment %}
+            {% comment %} {% endif %} {% endcomment %}
+            {% endif %}
+            {% if shirts %}
+            <tr>
+                <th>total : </th>
+                <th>₹{{totalprice}}</th>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    
+    document.addEventListener("DOMContentLoaded", function() {
+
+        
+      
+        
+        
+        document.getElementById('rzp-button1').onclick = function (e) {
+
+            var fname = document.querySelector('input[name="fname"]').value;
+            var lname = document.querySelector('input[name="lname"]').value;
+            var contact = document.querySelector('input[name="mobile"]').value;
+            var house = document.querySelector('input[name="house"]').value;
+            var apartment = document.querySelector('input[name="apartment"]').value;
+            var city = document.querySelector('input[name="city"]').value;
+            var state = document.querySelector('input[name="state"]').value;
+            var pincode = document.querySelector('input[name="pincode"]').value;
+            var email = document.querySelector('input[name="email"]').value;
+            var notebox = document.querySelector('textarea[name="addition-info"]');
+            var note = notebox.value;
+            
+            var options = {
+                "key": "{{key}}", // Enter the Key ID generated from the Dashboard
+                "amount": "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                "currency": "INR",
+                "name": "Style-X", //your business name
+                "description": "Test Transaction",
+                "image": "{% static 'img/logo2.png' %}",
+                "order_id": "{{payment.id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                "callback_url": `http://127.0.0.1:8000/payment/?fname=${fname}&lname=${lname}&contact=${contact}&house_street=${house}&apartment=${apartment}&city=${city}&state=${state}&pincode=${pincode}&email=${email}&note=${note}`,
+                "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+                    "name": "{{user.user_fname}} {{user.user_lname}}", //your customer's name
+                    "email": "{{user.user_email}}",
+                    "contact": "{{user.user_contact}}" //Provide the customer's phone number for better conversion rates 
+                },
+                "theme": {
+                    "color": "#3F72AF"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            
+            console.log(options)
+            // Function to validate form before opening Razorpay payment interface
+            function validateForm() {
+                var inputs = document.getElementsByTagName('input');
+                for (var i = 0; i < inputs.length; i++) {
+                    if (inputs[i].hasAttribute('required') && !inputs[i].value.trim()) {
+                        alert('Please fill all fields.');
+                        return false; // Prevent payment if validation fails
+                    }
+                    // Check pincode input for 6 digits
+                    if (inputs[i].name === 'pincode' && !/^\d{6}$/.test(inputs[i].value.trim())) {
+                        alert('Pincode must be 6 digits.');
+                        return false; // Prevent payment if pincode is not 6 digits
+                    }
+
+                    // Check mobile/contact number input for 10 digits
+                    if (inputs[i].name === 'mobile' && !/^\d{10}$/.test(inputs[i].value.trim())) {
+                        alert('Mobile number must be 10 digits.');
+                        return false; // Prevent payment if mobile number is not 10 digits
+                    }
+                }
+                // If all required fields are filled, return true
+                return true;
+            }
+
+            // Validate form before proceeding with payment
+            if (!validateForm()) {
+                e.preventDefault(); // Prevent default button behavior if validation fails
+            } else {
+                // If form validation succeeds, open Razorpay payment interface
+                rzp1.open();
+                e.preventDefault();
+            }
+        };
+    });
+</script>
+
+{% endblock %}

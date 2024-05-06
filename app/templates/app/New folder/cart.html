@@ -1,0 +1,58 @@
+{% extends "app/base.html" %}
+{% block content %}
+        <div class="cart-main">
+            <div class="cart-heading">
+                <div class="left">Product Details</div>
+                <div class="right">
+                    <p>Price</p>
+                    <p>Quantity</p>
+                    <p>Total</p>
+                    <p>Remove</p>
+                </div>
+            </div>
+            {% if msg %}{{msg}}{% endif %}
+            <div class="cart-product">
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="product-img">
+                        <img src="{{item.1}}" alt="product img">
+                        <p>{{item.0.product.product_name}}</p>
+                    </div>
+                    <div class="product-details">
+                        <p>{{item.0.product.price}}</p>
+                        <input type="number" name="" id="" value="{{item.0.quantity}}">
+                        {% widthratio item.0.product.price 1 item.0.quantity as total_price %}
+                        <p>{{ total_price }}</p>
+
+
+                        <p><i class="ri-close-line"></i></p>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
+            </div>
+            <div class="cart-checkout">
+                <div class="cart-total">
+                    <h3>Cart Total</h3>
+                    <div class="total-data">
+                        <p>Subtotal: </p>
+                        <p>$10.00</p>
+                    </div>
+                    <div class="total-data">
+                        <p>Delivery: </p>
+                        <p>$1.00</p>
+                    </div>
+                    <div class="total-data">
+                        <p>Discount: </p>
+                        <p>$0.00</p>
+                    </div>
+                    <hr>
+                    <div class="total-data">
+                        <p>Total: </p>
+                        <p>$11.00</p>
+                    </div>
+                </div>
+                <a href="#"><button class="mybtn">Proceed To Checkout</button></a>
+            </div>
+        </div>
+{% endblock  %}

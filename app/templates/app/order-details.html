@@ -1,0 +1,79 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+    
+        <!-- "Radhe Radhe" -->
+        {% block content %}
+        <div class="thankyou-checkout">
+            
+            <div class="checkout-text">
+                <h4 >checkout</h4>
+            </div>
+            <div class="thankyou-text">
+                <h4 style="text-transform: capitalize;">thank you. your order has been received.</h4>
+            </div>
+        </div>
+        <div class="order-details">
+            
+            <div class="orderdetails-box">
+                <table>
+                    <tr>
+                        <th>order number : </th>
+                        <th>date : </th>
+                        <th>total : </th>
+                        <td rowspan="2"><a href="{% url 'generateInvoice' %}?oid={{order.id}}"><button class="mybtn" >generate invoice</button></a></th>
+                        
+                    </tr>
+                    <tr>
+                        <td>{{order.id}}</td>
+                        <td>{{order.created_at|date:"F j, Y"}}</td>
+                        <td>₹{{order.total_price|floatformat:"0"}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="orderdetails-main">
+                <h4>order details</h4>
+                <table>
+                    <tr>
+                        <th>product</th>
+                        <th>total</th>
+                    </tr>
+                    {% if orderitems %}
+                        {% for item in orderitems %}
+                        <tr>
+                            <td>
+                                <div class="order-product">
+                                    <img src="{{item.product.imgs.first.image.url}}" alt="{{item.product.product_name}}">
+                                    <div class="orderproduct-details">
+                                        <p>{{item.product.product_name}}</p>
+                                        <p><b>color : </b>{{item.product.colors}}</p>
+                                        <p><b>size : </b>{{item.product.sizes}}</p>
+                                        <p><b>qty : </b>{{item.quantity}}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            {% if item.product.discount_price == 0 %}
+                            {% widthratio item.quantity 1 item.product.price as total_price %}
+                            {% else %}
+                            {% widthratio item.quantity 1 item.product.discount_price as total_price %}
+                            {% endif %}
+                            <td>₹{{total_price|floatformat:"0"}}</td>
+                        </tr>
+                        {% endfor %}
+                    
+                    {% endif %}
+                    
+                    <tr>
+                        <th>payment method : </th>
+                        <th>{{order.payment_method}}</th>
+                    </tr>
+                    <tr>
+                        <th>total : </th>
+                        <th>₹{{order.total_price|floatformat:"0"}}</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        {% endblock %}
+ 

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Cancellation</title>
+    <!-- Include any necessary CSS styles here -->
+</head>
+<body>
+    <h1>Order Cancellation</h1>
+    <p>Dear {{ order_details.user.user_fname }},</p>
+    
+    <p>Your order (ID: {{ order_details.order.id }}) has been successfully canceled.</p>
+    <p>Refund will be credited to your account.</p>
+    
+    <p>Order Details:</p>
+    <ul>
+        {% for order_item in order_details.order_items %}
+            <li>{{ order_item.product.product_name }} - Quantity: {{ order_item.quantity }}</li>
+        {% endfor %}
+    </ul>
+    
+    <p>Total Price: ₹{{ order_details.order.total_price }}</p>
+    
+    <!-- Include any necessary footer or closing statements here -->
+</body>
+</html>

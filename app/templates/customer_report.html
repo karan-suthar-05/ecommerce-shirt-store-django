@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Report</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h2 {
+            margin-bottom: 10px;
+            font-size:18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex;justify-content: center;flex-direction: column;align-items: center;line-height: 1px;">
+        <h1 style="text-decoration: underline;">{{shop.company_name}}</h1>
+        <p >Address : {{shop.company_address}}</p>
+        <p >Contact : {{shop.company_contact}} , {{shop.company_email}}</p>
+    </div>
+
+<hr>
+
+        <h2 style="display: inline-block;margin: 0;">Customer Report</h2>
+        <div style="display: inline-block;">Reporting Period:  {{ date_range }}</div>
+
+<hr>
+    <h3>Demographic Information:</h3>
+    <table>
+        <tr>
+            <th>Age Range</th>
+            <th>Percentage</th>
+        </tr>
+        {% for age_range, percentage in age_distribution.items %}
+        <tr>
+            <td>{{ age_range }}</td>
+            <td>{{ percentage }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <table>
+        <tr>
+            <th>Gender</th>
+            <th>Percentage</th>
+        </tr>
+        {% for gender, percentage in gender_percentages.items %}
+        <tr>
+            <td>{{ gender }}</td>
+            <td>{{ percentage }}%</td>
+        </tr>
+        {% endfor %}
+        
+    </table>
+
+    <h3>Purchase History:</h3>
+    <table>
+        <tr>
+            <th>Customer</th>
+            <th>Total Number of Orders</th>
+            <th>Average Order Value</th>
+            <th>Most Purchased Shirt</th>
+        </tr>
+    
+        {% for customer_id, data in customer_data.items %}
+        <tr>
+            <td>{{ data.customer_name }}</td>
+            <td>{{ data.total_orders }}</td>
+            <td>Rs.{{ data.average_order_value }}</td>
+            <td>{{ data.most_purchased_shirt }}</td>
+        </tr>
+        {% endfor %}
+        
+    </table>
+</body>
+</html>

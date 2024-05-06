@@ -1,0 +1,63 @@
+{% extends "app/base.html" %}
+{% load session_tags %}
+
+{% block content %}
+{% if msg %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{{msg}}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+        <!-- contact -->
+        <div class="contact-container">
+            <div class="contact">
+                <div class="google-map">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3671.873043967619!2d72.58264527436779!3d23.028433216111303!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e844f4c07c265%3A0x4e63ee32cbbfbea5!2sRaj%20Complex%2C%20Old%20City%2C%20Gheekanta%2C%20Bhadra%2C%20Ahmedabad%2C%20Gujarat%20380001!5e0!3m2!1sen!2sin!4v1708750957535!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div class="contact-data">
+                    <div class="contact-details">
+                        <h3>Contact us</h3>
+                        <p>For any inquiries or assistance, please don't hesitate to reach out to us. We value your feedback and are committed to providing exceptional customer service.</p>
+                        {% company_info as company %}
+                        {% if company %}
+
+                        
+                        <div class="contact-item">
+                            <i class="ri-map-pin-2-line"></i>
+                            <div class="contact-item-data">
+                                <p>Address:</p>
+                                <p>{{company.company_address}}</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-phone-line"></i>
+                            <div class="contact-item-data">
+                                <p>Phone:</p>
+                                <p>+91 {{company.company_contact}}</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="ri-mail-line"></i>
+                            <div class="contact-item-data">
+                                <p>Email:</p>
+                                <p>{{company.company_email}}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <form action="{% url 'contactMessge' %}" method="post">
+                        {% csrf_token %}
+                        <h3>Leave a comment</h3>
+                        <p>our staff will call back later and answer your questions.</p>
+                        <div class="contact-name">
+                            <input type="text" name="name" id="" placeholder="Your Name" required>
+                            <input type="email" name="email" id="" placeholder="Your Email" required>
+                        </div>
+                        <textarea name="msg" id="" cols="30" rows="5" placeholder="Your Message" required></textarea>
+                        <input type="submit" class="mybtn" value="Send Message">
+                    </form>
+                </div>
+            </div>
+        </div>
+{% endblock  %}
+        

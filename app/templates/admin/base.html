@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrahead %}
+    <link rel="shortcut icon" href="{% static 'favicon_io/favicon.ico' %}" />
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+
+    <form id="admin-response-form" method="post" action="">
+        {% csrf_token %}
+        <div>
+            <h2>Admin Response</h2>
+            <label for="id_admin_response">Admin Response:</label>
+            <textarea id="id_admin_response" name="admin_response" cols="100" rows="5"></textarea>
+            <br>
+            <input type="submit" value="Send Email Response" name="_send_email" class="button" />
+        </div>
+    </form>
+{% endblock %}

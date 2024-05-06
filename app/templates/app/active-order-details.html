@@ -1,0 +1,126 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+
+<!-- "Radhe Radhe" -->
+{% block content %}
+<div class="activeoreder-main">
+    <div class="order-details">
+        <div class="orderdetails-box">
+            {% if order.is_cancelled == False %}
+            <table>
+                <tr>
+                    <th>order number : </th>
+                    <th>date : </th>
+                    <th>total : </th>
+                    <th>order status : </th>
+                    <td rowspan="2"><a href="{% url 'generateInvoice' %}?oid={{order.id}}"><button class="mybtn" >generate invoice</button></a></th>
+                </tr>
+                <tr>
+                    <td>{{order.id}}</td>
+                    <td>{{order.created_at}}</td>
+                    <td>₹{{order.total_price|floatformat:"0"}}</td>
+                    <td>{{order.order_status}}</td>
+                </tr>
+                {% if order.order_status != "delivered" %}
+                
+                <tr>
+                    <td  colspan="5">Your order will be delivered within approximately 2 to 3 days.</td>
+                </tr>
+                
+                {% endif %}
+            </table>
+            {% else %}
+            <table>
+                <tr>
+                    <th>order number : </th>
+                    <th>date : </th>
+                    <th>total : </th>
+                    <th>order status : </th>
+                    <th>refund status : </th>
+                </tr>
+                <tr>
+                    <td>{{order.id}}</td>
+                    <td>{{order.created_at}}</td>
+                    <td>₹{{order.total_price|floatformat:"0"}}</td>
+                    <td>cancelled</td>
+                    {% if order.is_refunded == False %}
+                        <td>pending</td>
+                        {% else %}
+                        <td>completed</td>
+                    {% endif %}
+                </tr>
+            </table>
+            {% endif %}
+            
+        </div>
+        <div class="orderdetails-main">
+            <h4 style="text-transform: capitalize;">customer details : </h4>
+            <table>
+                <tr>
+                    <th style="width:15%;">customer name : </th>
+                    <td>{{order.billing_address.fname}} {{order.billing_address.lname}}</td>
+                </tr>
+                <tr>
+                    <th style="width:15%;">customer contact : </th>
+                    <td>{{order.billing_address.contact}}</td>
+                </tr>
+                <tr>
+                    <th style="width:15%;">address : </th>
+                    <td>{{order.billing_address.house_street}}, {{order.billing_address.apartment_area}}, {{order.billing_address.city}}, {{order.billing_address.state}}-{{order.billing_address.pincode}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="orderdetails-main">
+            <h4>order details : </h4>
+            <table>
+                <tr>
+                    <th>product</th>
+                    <th>total</th>
+                </tr>
+                {% for orderitem in orderitems %}
+                    <tr>
+                        <td>
+                            <div class="order-product">
+                                <img src="{{orderitem.product.imgs.first.image.url}}" alt="shirt1">
+                                <div class="orderproduct-details">
+                                    <p>{{orderitem.product.product_name}}</p>
+                                    <p><b>color : </b>{{orderitem.product.colors}}</p>
+                                    <p><b>size : </b>{{orderitem.product.sizes}}</p>
+                                    <p><b>qty : </b>{{orderitem.quantity}}</p>
+                                </div>
+                            </div>
+                        </td>
+                        {% if orderitem.product.discount_price == 0 %}
+                        {% widthratio orderitem.quantity 1 orderitem.product.price as total_price %}
+                        {% else %}
+                        {% widthratio orderitem.quantity 1 orderitem.product.discount_price as total_price %}
+                        {% endif %}
+                        <td>₹{{total_price}}</td>
+                    </tr>
+                {% endfor %}
+                
+                
+                <tr>
+                    <th>payment method : </th>
+                    <th>{{order.payment_method}}</th>
+                </tr>
+                <tr>
+                    <th>total : </th>
+                    <th>₹{{order.total_price|floatformat:"0"}}</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function confirmCancel(event) {
+        event.preventDefault();
+        var cancelLink = event.target.href;
+        var confirmCancel = confirm("Are you sure you want to cancel this order?");
+        if (confirmCancel) {
+            window.location.href = cancelLink;
+        }
+    }
+</script>
+{% endblock %}

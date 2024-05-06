@@ -1,0 +1,248 @@
+{% extends "app/base.html" %}
+{% block content %}
+{% load session_tags %}
+{% if 'msg' in request.session %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>{% display_and_flush_message %}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+{% endif %}
+    <div class="shop">
+        <div class="filter">
+            <div class="filter-search">
+                <form action="{% url 'shopPage' %}" method="get">
+                  {% csrf_token %}
+                    <input type="text" name="q" id="" value="{{request.GET.q}}" placeholder="Search item">
+                    <button type="submit"><i class="ri-search-2-line"></i></button>
+                </form>
+            </div>
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                      Categories
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                    <div class="accordion-body">
+                      {% if request.GET.f == "" %}
+                        <a href="/shop/?f=&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}" class="accordian-active">All</a><hr>
+                        {% else %}
+                        <a href="/shop/?f=&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}" class="accordion-body-a">All</a><hr>
+                      {% endif %}
+                      {% for cat in categories %}
+                      
+                      {% if cat|stringformat:"s" == request.GET.f|stringformat:"s" %}
+                        
+                          <a href="/shop/?f={{cat}}&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}" class=" accordian-active" style="text-transform: capitalize;">{{cat}}</a><hr>
+                          {% else %}
+                          
+                           <a href="/shop/?f={{cat}}&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}" class="accordion-body-a" style="text-transform: capitalize;">{{cat}}</a><hr>
+                        {% endif %}
+                      {% endfor %}
+                      
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                      Filter Price
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                    <div class="accordion-body">
+                      {% if request.GET.min_price == "" and request.GET.max_price == "" %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=&max_price=" class="accordian-active">All</a><hr>
+                      {% else %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=&max_price=" class="accordion-body-a">All</a><hr>
+                      {% endif %}
+                      {% if request.GET.min_price == "" and request.GET.max_price == "250" %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=&max_price=250" class="accordian-active">250 and less</a><hr>
+                      {% else %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=&max_price=250" class="accordion-body-a">250 and less</a><hr>
+                      {% endif %}
+                      {% if request.GET.min_price == "251" and request.GET.max_price == "500" %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=251&max_price=500" class="accordian-active">251-500</a><hr>
+                      {% else %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=251&max_price=500" class="accordion-body-a">251-500</a><hr>
+                      {% endif %}
+                      {% if request.GET.min_price == "501" and request.GET.max_price == "1000" %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=501&max_price=1000" class="accordian-active">501-1000</a><hr>
+                      {% else %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=501&max_price=1000" class="accordion-body-a">501-1000</a><hr>
+                      {% endif %}
+                      {% if request.GET.min_price == "1001" and request.GET.max_price == "" %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=1001&max_price=" class="accordian-active">1001 and more</a><hr>
+                      {% else %}
+                      <a href="/shop/?f={{request.GET.f}}&min_price=1001&max_price=" class="accordion-body-a">1001 and more</a><hr>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                      Size
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                    <form  id="size-filter-form" action="{% url 'shopPage' %}" method="GET">
+                        {% for size in sizes %}
+                        <div class="size">
+                          <label for="size_{{ size.id }}" style="text-transform: uppercase;">{{ size }}</label>
+                          <input type="checkbox" name="size" id="size_{{ size.id }}" value="{{ size.id }}"   {% if size.id in selectedsizes %} checked {% endif %}>
+                        </div>
+                        {% endfor %}
+                    </form>
+                  </div>
+                </div>
+              </div>
+        </div>
+        <div class="product-main">
+            <div class="result-sort">
+                <div class="result">Showing {{current_page.start_index}}–{{current_page.end_index}} of {{current_page.paginator.count}} results</div>
+                <form action="{% url 'shopPage' %}"  id="sortingForm" method="get">
+                  {% csrf_token %}
+                <div class="sort">Sort by :
+                  <input type="hidden" name="page" value="{{current_page.number}}">
+                  <input type="hidden" name="q" value="{{request.GET.q}}">
+                  <input type="hidden" name="f" value="{{request.GET.f}}">
+                  <input type="hidden" name="min_price" value="{{request.GET.min_price}}">
+                  <input type="hidden" name="max_price" value="{{request.GET.max_price}}">
+                    <select id="sort" name="sort">
+                      <option value="name_az" {% if request.GET.sort == 'name_az' %}selected{% endif %}>Name (A-Z)</option>
+                      <option value="name_za"  {% if request.GET.sort == 'name_za' %}selected{% endif %}>Name (Z-A)</option>
+                      <option value="price_low_high"  {% if request.GET.sort == 'price_low_high' %}selected{% endif %}>Price (Low to High)</option>
+                      <option value="price_high_low" {% if request.GET.sort == 'price_high_low' %}selected{% endif %}>Price (High to Low)</option>
+                    </select>
+                  </div>
+                </form>
+            </div>
+            <div class="products">
+              {% if all_shirts %}
+              {% for shirt in all_shirts %}
+                
+              <div class="item">
+                
+                  <div class="content">   
+                    
+                      {% if shirt.imgs.all %}
+                      <a href="{% url 'productdetailsPage' pid=shirt.id %}" style="text-decoration: none;">
+                          <img src="{{shirt.imgs.first.image.url}}" alt="">
+                      </a>
+                      {% endif %}       
+                      <span class="cart-icon"><a href="{% url 'addtocart' pid=shirt.id %}?from_page=shopPage"><i class="ri-shopping-cart-2-fill"></i></a></span>
+                      <div class="details">
+                          <h4>{% if shirt.product_name|length > 10 %}
+                              {{shirt.product_name|slice:":10"}}...
+                              {% else %}
+                              {{shirt.product_name}}
+                              {% endif %}
+                          
+                          </h4>
+                          <p> {% if shirt.product_description|length > 10 %}
+                              {{ shirt.product_description|slice:":10" }}...
+                              {% else %}
+                              {{ shirt.product_description}}
+                              {% endif %}</p>
+                          <div class="price">
+                            {% if shirt.offer.discount_percentage %}
+                            <p>₹{{shirt.discount_price|default_if_none:"0"|floatformat:0}}</p>
+                            <p style="text-decoration: line-through;">₹{{shirt.price|default_if_none:"0"|floatformat:0}}</p>
+                            <span>{{ shirt.offer.discount_percentage|default_if_none:"0"|floatformat:0 }}% off</span>
+                            {% else %}
+                            <p>₹{{shirt.price|default_if_none:"0"|floatformat:0}}</p>
+
+                              {% endif %}
+
+                          </div>
+                          <div class="size">
+                              <span><b>Size :</b></span><p>{{shirt.sizes}}</p>
+                          </div>
+                      </div>
+                      
+                  </div>
+                
+                  <a href="{% url 'razorpayOrder' %}?pid={{shirt.id}}&from_page=shop"><button>Buy Now</button></a>
+              </div>
+            
+              {% endfor %}
+              {% else %}
+              <h3>Sorry, we couldn't find any products.</h3>
+              {% endif %}
+               
+           
+
+            </div>
+            {% if all_shirts %}
+            
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                  {% if all_shirts.has_previous %}
+                  
+                  <li class="page-item">
+                    <a class="page-link" href="/shop/?page=1&sort={{request.GET.sort}}&q={{request.GET.q}}&f={{request.GET.f}}&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}" tabindex="-1" aria-disabled="true">First</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="/shop/?page={{all_shirts.previous_page_number}}&sort={{request.GET.sort}}&q={{request.GET.q}}&f={{request.GET.f}}&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                  
+
+                 
+                  {% endif %}
+                  {% for n in page_list %}
+                 
+                      <li class="page-item {% if n == current_page.number %}active{% endif %}"><a class="page-link" href="/shop/?page={{n}}&sort={{request.GET.sort}}&q={{request.GET.q}}&f={{request.GET.f}}&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}">{{n}}</a></li>
+                     
+
+                 
+                  {% endfor %}
+                  
+                  {% if all_shirts.has_next %}
+                  
+                  <li class="page-item">
+                    <a class="page-link" href="/shop/?page={{all_shirts.next_page_number}}&sort={{request.GET.sort}}&q={{request.GET.q}}&f={{request.GET.f}}&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="/shop/?page={{total_page}}&sort={{request.GET.sort}}&q={{request.GET.q}}&f={{request.GET.f}}&min_price={{request.GET.min_price}}&max_price={{request.GET.max_price}}">Last</a>
+                  </li>
+                 
+                  {% endif %}
+                </ul>
+            </nav>
+            {% endif %}      
+        </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Get the form element
+          const form = document.getElementById('size-filter-form');
+      
+          // Add event listener to the checkboxes
+          form.addEventListener('change', function(event) {
+              // Check if the changed element is a size checkbox
+              if (event.target.name === 'size') {
+                  // Get all selected size checkboxes
+                  const selectedSizes = Array.from(document.querySelectorAll('input[name="size"]:checked'))
+                                           .map(checkbox => checkbox.value);
+      
+                  // Construct the query string with selected sizes
+                  const queryString = new URLSearchParams();
+                  selectedSizes.forEach(size => queryString.append('size', size));
+      
+                  // Append the query string to the form action URL
+                  const actionUrl = form.getAttribute('action');
+                  const finalUrl = actionUrl + '?' + queryString.toString();
+      
+                  // Redirect to the filtered URL
+                  window.location.href = finalUrl;
+              }
+          });
+      });
+      </script>
+    {% endblock  %}

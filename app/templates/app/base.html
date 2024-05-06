@@ -1,0 +1,174 @@
+{% load static %}
+{% load session_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'favicon_io/favicon.ico' %}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% if request.path == '/' or request.path == '/logout/' %}
+    <title>Welcome to style-x shirts | Home</title>
+    {% elif request.path == '/shop/' %}
+    <title>Style-x shirts | Shop</title>
+    {% elif request.path == '/about/' %}
+    <title>Style-x shirts | About us</title>
+    {% elif request.path == '/contact/' %}
+    <title>Style-x shirts | Contact us</title>
+    {% elif request.path == '/cart/' %}
+    <title>Style-x shirts | Cart</title>
+    {% elif request.path == '/userProfilePage/' %}
+    <title>Style-x shirts | Profile</title>
+    {% elif request.path == '/activeOrderPage/' %}
+    <title>Style-x shirts | Orders</title>
+    {% elif request.path == '/login/' %}
+    <title>Style-x shirts | Login</title>
+    {% elif request.path == '/register/' %}
+    <title>Style-x shirts | Registration</title>
+    {% elif request.path == '/forgetpassword/' %}
+    <title>Style-x shirts | Forgetpassword</title>
+    {% elif request.path == '/checkoutPage/' %}
+    <title>Style-x shirts | Checkout</title>
+    {% elif request.path == '/orderDetailsPage/' %}
+    <title>Style-x shirts | Order details</title>
+    {% elif request.path == '/orderHistoryPage/' %}
+    <title>Style-x shirts | Order history</title>
+    {% endif %}
+</head>
+
+<body>
+<div class="main">
+<div class="mynav">
+    <div class="left">
+        <ul>
+            <li><a class=" {% if request.path == '/' %}nav-active{% endif %}" href="{% url 'indexPage' %}">Home</a></li>
+            <li><a class="{% if request.path == '/shop/' %}nav-active{% endif %}" href="{% url 'shopPage' %}">Shop</a></li>
+            <li><a class="{% if request.path == '/about/' %}nav-active{% endif %}" href="{% url 'aboutPage' %}">About</a></li>
+            <li><a class="{% if request.path == '/contact/' %}nav-active{% endif %}" href="{% url 'contactPage' %}">Contact</a></li>
+        </ul>
+        <div class="menu">
+            <div class="open">
+                <i class="ri-menu-line"></i>
+            </div>
+            <div class="close">
+                <i class="ri-close-line"></i>
+            </div>
+            <div class="links" id="links">
+                <ul>
+                    {% if 'fname' in request.session and 'email' in request.session and 'mobile' in request.session %}
+                          <li><a href="{% url 'indexPage' %}">Home</a></li>
+                            <li><a href="{% url 'shopPage' %}">Shop</a></li>
+                            <li><a href="{% url 'aboutPage' %}">About</a></li>
+                            <li><a href="{% url 'contactPage' %}">Contact</a></li>
+                            <li><a href="{% url 'userProfilePage' %}">My Profile</a></li>
+                            <li><a href="{% url 'activeOrderPage' %}">My Order</a></li>
+                            <li><a href="{% url 'orderHistoryPage' %}">Order History</a></li>
+                            <li><a href="{% url 'logout' %}">Log out</a></li>
+                    {% else %}
+                    <li><a href="{% url 'indexPage' %}">Home</a></li>
+                    <li><a href="{% url 'shopPage' %}">Shop</a></li>
+                    <li><a href="{% url 'aboutPage' %}">About</a></li>
+                    <li><a href="{% url 'contactPage' %}">Contact</a></li>
+                    <li><a href="{% url 'loginPage' %}">Log in</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="center">
+        <div class="logo">
+            <a href="{% url 'indexPage' %}"><img src="{% static 'img/logo2.png' %}" alt="logo"></a>
+        </div>
+    </div>
+    <div class="right">
+        <a class="{% if request.path == '/cart/' %}nav-active{% endif %}" href="{% url 'cartPage' %}">Cart<i class="ri-shopping-cart-line"><span>{{cart_count}}</span></i></a>
+        {% if 'fname' in request.session and 'email' in request.session and 'mobile' in request.session %}
+        <h3>Hello, {{request.session.fname}} <i class="ri-arrow-down-s-line"></i>
+            <ul>
+                <li><a href="{% url 'userProfilePage' %}"><i class="ri-account-circle-fill"></i> My Profile</a></li>
+                <li><a href="{% url 'activeOrderPage' %}"><i class="ri-archive-stack-fill"></i>My Orders</a></li>
+                <li><a href="{% url 'orderHistoryPage' %}"><i class="ri-history-line"></i>Order History</a></li>
+                <li><a href="{% url 'logout' %}"><i class="ri-logout-box-r-line"></i>Logout</a></li>
+            </ul>
+        </h3>
+        {% else %}
+        <div class="login">
+            <a href="{% url 'loginPage' %}"> <button class="mybtn">Log in</button></a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block content %}
+
+
+
+
+{% endblock %}
+<div class="myfooter">
+    <div class="details">
+        <div class="company">
+            <p>our social networks :</p>
+            <div class="icons">
+                <a href=""><i class="ri-twitter-x-line"></i></a>
+                <a href=""><i class="ri-facebook-fill"></i></a>
+                <a href=""><i class="ri-instagram-line"></i></a>
+            </div>
+        </div>
+        <div class="menu">
+            <p>menu :</p>
+            <a href="{% url 'shopPage' %}">shop</a>
+            <a href="{% url 'aboutPage' %}">about</a>
+            <a href="{% url 'cartPage' %}">cart</a>
+            <a href="{% url 'contactPage' %}">contact</a>
+        </div>
+        <div class="help">
+            <p>help :</p>
+            <a href="#">terms & condition</a>
+            <a href="#">privacy policy</a>
+            <a href="#">return product</a>
+        </div>
+        <div class="info">
+            <p>have a question ?</p>
+            {% company_info as company %}
+            {% if company %}
+            
+            <div class="address">
+                <i class="ri-map-pin-2-line"></i>
+                <p>{{company.company_address}}</p>
+            </div>
+            <div class="phone">
+                <i class="ri-phone-fill"></i>
+                <p>+91 {{company.company_contact}}</p>
+            </div>
+            <div class="mail">
+                <i class="ri-mail-line"></i>
+                <p>{{company.company_email}}</p>
+            </div>
+            {% endif %}
+            
+        </div>
+    </div>
+    <p>copyright &copy; 2024 all right reserved</p>
+</div>
+</div>
+<script>
+    // Add event listener to the sorting dropdown
+    document.getElementById('sort').addEventListener('change', function() {
+        // Submit the form when the dropdown value changes
+        document.getElementById('sortingForm').submit();
+    });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <!-- <script src="{% static 'js/script.js' %}"></script> -->
+    <script src="{% static 'js/consolee.js' %}"></script>
+</body>
+
+</html>

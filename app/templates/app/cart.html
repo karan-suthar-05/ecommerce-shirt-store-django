@@ -1,0 +1,103 @@
+{% extends "app/cart-base.html" %}
+{% block content %}
+{% load session_tags %}
+{% if 'msg' in request.session %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>{% display_and_flush_message %}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+{% if messages %}
+{% for msg in messages %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>{{msg}}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+
+<div class="cart-main">
+    <div class="cart-heading">
+        <div class="left">Product Details</div>
+        <div class="right">
+            <p>Price</p>
+            <p>Quantity</p>
+            <p>Total</p>
+            <p>Remove</p>
+        </div>
+    </div>
+    <div class="cart-product">
+            <form action="{% url 'updatecart' %}" id="updateCartForm" method="post">
+            {% csrf_token %}
+            {% if cart_items %}
+            
+            {% for item in cart_items %}
+            <div class="cart-item">
+                <div class="product-img">
+                    <img src="{{item.1}}" alt="{{item.1}}">
+                    <p>{{item.0.product.product_name}}</p>
+                </div>
+                <div class="product-details">
+                    <table>
+                        <tr>
+                            {% if item.0.product.discount_price > 0 %}
+                            <td>
+                                <p>₹{{item.0.product.discount_price|floatformat:"0"}}</p>
+                            </td>
+                            {% else %}
+                            <td>
+                                <p>₹{{item.0.product.price|floatformat:"0"}}</p>
+                            </td>
+
+                            {% endif %}
+                            <td>
+                                <div class="counter-container" id="counter1">
+                                    <button type="button" class="counter-btn"
+                                        onclick="changeQuantity('quantity{{forloop.counter}}', -1)">-</button>
+                                    <input class="counter-input" name="cartQty{{item.0.id}}" id="quantity{{forloop.counter}}" type="text"
+                                        value="{{item.0.quantity}}" readonly>
+                                    <button type="button" class="counter-btn"
+                                        onclick="changeQuantity('quantity{{forloop.counter}}', 1)">+</button>
+                                </div>
+                            </td>
+                            {% if item.0.product.discount_price > 0 %}
+                            {% widthratio item.0.product.discount_price 1 item.0.quantity as total_price %}
+                            <td><p>₹{{ total_price|floatformat:"0"}}</p></td>
+                            {% else %}
+                            {% widthratio item.0.product.price 1 item.0.quantity as total_price %}
+                            <td><p>₹{{ total_price|floatformat:"0"}}</p></td>
+                        
+                            {% endif %}
+
+
+                            <td>
+                                <p><a href="{% url 'removefromcart' cid=item.0.id %}"><i class="ri-close-line"></i></a></p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+            <hr>
+            {% endfor %}
+            <a href=""><button class="mybtn" id="updateCartButton" type="submit">Update Cart</button></a>
+
+            {% else %}
+                <h3>Your cart is empty. Please add items to proceed.</h3>
+            {% endif %}
+        </form>
+    </div>
+    {% if cart_items %}
+    <div class="cart-checkout">
+        <div class="cart-total">
+            <h3>Cart Total</h3>
+            <div class="total-data">
+                <p>Total: </p>
+                <p>₹{{cart.total_price|floatformat:"0"}}</p>
+            </div>
+        </div>
+        <a href="{% url 'razorpayOrder' %}?cid={{cart.id}}&from_page=cart"><button class="mybtn">Proceed To Checkout</button></a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

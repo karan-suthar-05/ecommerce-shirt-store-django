@@ -1,0 +1,67 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+    
+        <!-- "Radhe Radhe" -->
+        {% block content %}
+        <div class="active-order">
+            <h3>Your Order History : </h3>
+            <div class="active-order-box">
+                {% if orders %}
+                {% for order in orders %}
+                    <div class="active-order-details">
+                        <table>
+                            <tr>
+                                <td>order number : </td>
+                                <td>{{order.id}}</td>
+                                {% if order.is_cancelled == True %}
+                                
+                                <td rowspan="2" style="text-align: center;"><a href="{% url 'activeOrderDetailsPage' %}?oid={{order.id}}" class="mybtn">view details</a></td>
+                                {% else %}
+                                
+                                <td rowspan="4" style="text-align: center;"><a href="{% url 'activeOrderDetailsPage' %}?oid={{order.id}}" class="mybtn">view details</a></td>
+                                {% endif %}
+                            </tr>
+                            {% if order.is_cancelled == True %}
+                            <tr>
+                                <td>order status : </td>
+                                <td>cancelled</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td>order status : </td>
+                                <td>{{order.order_status}}</td>
+                            </tr>
+                            {% endif %}
+                           
+                            <tr>
+                                <td>order date : </td>
+                                <td>{{order.created_at}}</td>
+                                {% if order.is_cancelled == True %}
+                                {% if order.is_refunded == True %}
+                                
+                                <td rowspan="2" style="text-align:center;">refund status : completed</td>
+                                {% else %}
+                                <td rowspan="2" style="text-align:center;">refund status : pending</td>
+                                {% endif %}
+                                {% endif %}
+                                
+                            </tr>
+                            <tr>
+                                <td>total amount : </td>
+                                <td>₹{{order.total_price|floatformat:"0"}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                {% endfor %}
+                {% else %}
+                    <h3>Looks like your order history is empty.</h3>
+                {% endif %}
+                
+                
+                    
+            </div>
+        
+        </div>
+
+        {% endblock %}

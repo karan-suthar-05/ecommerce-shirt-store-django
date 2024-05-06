@@ -1,0 +1,105 @@
+{% extends "app/product-detailsbase.html" %}
+{% block content %}
+{% load session_tags %}
+{% if 'msg' in request.session %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>{% display_and_flush_message %}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+{% endif %}
+<div class="product-details-page">
+
+    <div class="product-container">
+        <div class="image-container" id="image-container">
+            {% for img in imgs %}
+            <img class="image" src="{{img.image.url}}" alt="product img{{forloop.counter}}" >
+            {% endfor %}
+            <div class="dot-container">
+                {% for img in imgs %}
+                    <span class="dot" onclick="currentSlide({{forloop.counter}})"></span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="product-content">
+            <h4>{{shirt.product_name}}</h4>
+            <p>{{shirt.product_description}}</p>
+            <div class="pro-price">
+                {% if shirt.offer.discount_percentage %}
+                <h4>₹{{shirt.discount_price|default_if_none:"0"|floatformat:0}}</h4>
+                <h4 style="text-decoration: line-through;">₹{{shirt.price|default_if_none:"0"|floatformat:0}}</h4>
+                <h4 style="color:green">{{ shirt.offer.discount_percentage|default_if_none:"0"|floatformat:0 }}% off</h4>
+                {% else %}
+                <h4>₹{{shirt.price|default_if_none:"0"|floatformat:0}}</h4>
+                {% endif %}
+            </div>
+            <table>
+                <tr>
+                    <td>Size :</td>
+                    <td>
+                        {% comment %} <div class="btn-group"  role="group" aria-label="Basic radio toggle button group">
+                            {% for size in shirt.sizes.all %}
+                                {% if forloop.counter == 1 %}
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio{{forloop.counter}}" autocomplete="off"
+                                checked>
+                            <label class="btn btn-outline-secondary" style="text-transform: uppercase;" for="btnradio{{forloop.counter}}">{{size}}</label>
+                                {% else %}
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio{{forloop.counter}}" autocomplete="off">
+                                <label class="btn btn-outline-secondary" style="text-transform: uppercase;" for="btnradio{{forloop.counter}}">{{size}}</label>
+                                {% endif %}
+                            {% endfor %}
+                        </div> {% endcomment %}
+                        {{shirt.sizes}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Color :</td>
+                    <td>
+                        {{shirt.colors}}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Qty :</td>
+                    <td>
+                        <div id="quantity-container">
+                            <button id="decrease-btn" onclick="decreaseQuantity()">-</button>
+                            <input id="quantity" type="text" value="1" readonly>
+                            <button id="increase-btn" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+
+
+
+            <div class="pro-btn">
+                <a><button class="mybtn" id="add-to-cart-btn">Add to cart</button></a>
+                <a href="#"><button class="mybtn" id="buy-now">buy now</button></a>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="product-desc">
+        <div class="tab-buttons">
+            <div class="tab-button active" onclick="showContent('description-content')">Description</div>
+            <!-- <div class="tab-button" onclick="showContent('reviews-content')">Reviews</div> -->
+        </div>
+
+        <div id="content-container">
+            <div id="description-content">
+                <h2>Product Description : </h2>
+                <p>{{shirt.product_detail|safe}}</p>
+                <!-- Add more description content as needed -->
+            </div>
+
+            <div id="reviews-content">
+                <h2>User Reviews : </h2>
+                <p>No reviews yet.</p>
+                <!-- Add user reviews content as needed -->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
